@@ -1,4 +1,4 @@
-algorithms
+Algorithms
 ==========
 
 Useful algorithms

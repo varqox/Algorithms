@@ -16,7 +16,7 @@ class KMP
 
 	public function match($T, $P)
 	{
-		$array = array();
+	    $array = array();
 
 	    $n = strlen($T);
 	    $m = strlen($P);

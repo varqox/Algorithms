@@ -1,11 +1,11 @@
 #include <iostream>
-#include <queue>
+#include <deque>
 
 using namespace std;
 
-queue<int> kmp(const string& text, const string& pattern)
+deque<int> kmp(const string& text, const string& pattern)
 {
-	queue<int> out;
+	deque<int> out;
 	int *P=new int[pattern.size()], k=0, pl=pattern.size();
 	P[0]=0;
 	for(int i=1; i<pl; ++i)
@@ -23,7 +23,7 @@ queue<int> kmp(const string& text, const string& pattern)
 		if(pattern[k]==text[i]) ++k;
 		if(k==pl)
 		{
-			out.push(i);
+			out.push_back(i);
 			k=P[k-1];
 		}
 	}
@@ -35,7 +35,7 @@ int main()
 {
 	ios_base::sync_with_stdio(0);
 	string pattern, text;
-	queue<int> wys;
+	deque<int> wys;
 	cin >> text;
 	cin >> pattern;
 	cout << pattern << " :";
@@ -43,7 +43,7 @@ int main()
 	while(!wys.empty())
 	{
 		cout << ' ' << wys.front();
-		wys.pop();
+		wys.pop_front();
 	}
 	cout << endl;
 return 0;

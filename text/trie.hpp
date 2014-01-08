@@ -66,6 +66,6 @@ public:
 	* second is true if all is OK or
 	* false if element already exists.
 	*/
-	pair<iterator, bool> insert(const std::string&);
+	std::pair<iterator, bool> insert(const std::string&);
 	void erase(const std::string&);
 };

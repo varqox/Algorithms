@@ -112,6 +112,7 @@ public:
 		node* p;
 		iterator(node* x): p(x){}
 	public:
+		iterator(): p(NULL){}
 		iterator(const iterator& _it): p(_it.p){}
 		bool operator==(const iterator& _it) {return this->p==_it.p;}
 		bool operator!=(const iterator& _it) {return this->p!=_it.p;}

@@ -1,4 +1,3 @@
-#include "trie.hpp"
 
 namespace std
 {

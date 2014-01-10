@@ -18,7 +18,6 @@ protected:
 #endif
 	struct node
 	{
-
 		bool is_pattern;
 		unsigned char key;
 		node* parent;
@@ -50,7 +49,7 @@ public:
 		bool operator==(const iterator& _it) {return this->p==_it.p;}
 		bool operator!=(const iterator& _it) {return this->p!=_it.p;}
 		T& operator*() {return *this->p->value;}
-		friend class Trie; 
+		friend class Trie;
 	};
 
 	Trie(): root(new node(NULL)){}
@@ -117,7 +116,7 @@ public:
 		bool operator==(const iterator& _it) {return this->p==_it.p;}
 		bool operator!=(const iterator& _it) {return this->p!=_it.p;}
 		T& operator*() {return *this->p->value;}
-		friend class CompressedTrie; 
+		friend class CompressedTrie;
 	};
 
 	CompressedTrie(): root(new node(NULL)){}
@@ -143,3 +142,5 @@ public:
 	void erase(const std::string&);
 	std::string get_name(const iterator&);
 };
+
+#include "trie.tcc"

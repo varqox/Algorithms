@@ -16,37 +16,50 @@ protected:
 #if __cplusplus >= 201103L
 	std::mutex once_operation;
 #endif
-	struct node
+	class node
 	{
+		node(const node& _nd): is_pattern(_nd.is_pattern), key(_nd.key), parent(_nd.parent), value(_nd.value){}
+		node& operator=(const node&){return *this;}
+	public:
 		bool is_pattern;
 		unsigned char key;
 		node* parent;
 		node* son[256];
 		T* value;
 
-		node(node* new_parent, const unsigned char new_key=0, bool new_is_pattern=false): is_pattern(new_is_pattern), key(new_key), parent(new_parent)
+		node(node* new_parent, const unsigned char new_key=0, bool new_is_pattern=false): is_pattern(new_is_pattern), key(new_key), parent(new_parent), value(NULL)
 		{
-			for(int i=0; i<256; ++i)
+			for(short i=0; i<256; ++i)
 				son[i]=NULL;
+		}
+
+		node(node* new_parent, const node& _nd): is_pattern(_nd.is_pattern), key(_nd.key), parent(new_parent), value(new T(*_nd.value))
+		{
+			for(short i=0; i<256; ++i)
+				if(_nd.son[i]!=NULL)
+					this->son[i]=new node(this, *_nd.son[i]);
+				else
+					this->son[i]=NULL;
 		}
 
 		~node()
 		{
 			if(this->is_pattern)
 				delete this->value;
-			for(int i=0; i<256; ++i)
+			for(short i=0; i<256; ++i)
 				if(this->son[i]!=NULL) delete this->son[i];
 		}
 	};
 	node* root;
 public:
-	class iterator : public std::iterator<std::input_iterator_tag, T>
+	class iterator
 	{
 		node* p;
 		iterator(node* x): p(x){}
 	public:
 		iterator(): p(NULL){}
 		iterator(const iterator& _it): p(_it.p){}
+		iterator& operator=(const iterator& _it) {this->p=_it.p;return *this;}
 		bool operator==(const iterator& _it) {return this->p==_it.p;}
 		bool operator!=(const iterator& _it) {return this->p!=_it.p;}
 		T& operator*() {return *this->p->value;}
@@ -54,10 +67,28 @@ public:
 		friend class Trie;
 	};
 
+#if __cplusplus >= 201103L
+	Trie(): once_operation(), root(new node(NULL)){}
+	Trie(const Trie& _trie): once_operation(), root(new node(NULL, _trie.root)){}
+#else
 	Trie(): root(new node(NULL)){}
+	Trie(const Trie& _trie): root(new node(NULL, *_trie.root)){}
+#endif
 
-	~Trie()
+	Trie& operator=(const Trie& _trie)
+	{
+		delete this->root;
+		root=new node(NULL, *_trie.root);
+	return *this;
+	}
+
+	virtual ~Trie()
 	{delete this->root;}
+
+	void swap(Trie& _trie)
+	{
+		std::swap(this->root, _trie.root);
+	}
 
 #if __cplusplus >= 201103L
 	void lock(){this->once_operation.lock();}
@@ -87,8 +118,11 @@ protected:
 #if __cplusplus >= 201103L
 	std::mutex once_operation;
 #endif
-	struct node
+	class node
 	{
+		node(const node& _nd): is_pattern(_nd.is_pattern), key(_nd.key), parent(_nd.parent), son(_nd.son), value(_nd.value){}
+		node& operator=(const node&){return *this;}
+	public:
 		typedef std::map<unsigned char, node*> son_type;
 
 		bool is_pattern;
@@ -97,7 +131,13 @@ protected:
 		son_type son;
 		T* value;
 
-		node(node* new_parent, const unsigned char new_key=0, bool new_is_pattern=false): is_pattern(new_is_pattern), key(new_key), parent(new_parent){}
+		node(node* new_parent, const unsigned char new_key=0, bool new_is_pattern=false): is_pattern(new_is_pattern), key(new_key), parent(new_parent), son(), value(NULL){}
+
+		node(node* new_parent, const node& _nd): is_pattern(_nd.is_pattern), key(_nd.key), parent(new_parent), son(_nd.son), value(new T(*_nd.value))
+		{
+			for(typename son_type::iterator i=this->son.begin(); i!=this->son.end(); ++i)
+				i->second=new node(this, *_nd.son.find(i->first)->second);
+		}
 
 		~node()
 		{
@@ -109,13 +149,14 @@ protected:
 	};
 	node* root;
 public:
-	class iterator : public std::iterator<std::input_iterator_tag, T>
+	class iterator
 	{
 		node* p;
 		iterator(node* x): p(x){}
 	public:
 		iterator(): p(NULL){}
 		iterator(const iterator& _it): p(_it.p){}
+		iterator& operator=(const iterator& _it) {this->p=_it.p;return *this;}
 		bool operator==(const iterator& _it) {return this->p==_it.p;}
 		bool operator!=(const iterator& _it) {return this->p!=_it.p;}
 		T& operator*() {return *this->p->value;}
@@ -123,10 +164,28 @@ public:
 		friend class CompressedTrie;
 	};
 
+#if __cplusplus >= 201103L
+	CompressedTrie(): once_operation(), root(new node(NULL)){}
+	CompressedTrie(const CompressedTrie& _trie): once_operation(), root(new node(NULL, _trie.root)){}
+#else
 	CompressedTrie(): root(new node(NULL)){}
+	CompressedTrie(const CompressedTrie& _trie): root(new node(NULL, *_trie.root)){}
+#endif
 
-	~CompressedTrie()
+	CompressedTrie& operator=(const CompressedTrie& _trie)
+	{
+		delete this->root;
+		root=new node(NULL, *_trie.root);
+	return *this;
+	}
+
+	virtual ~CompressedTrie()
 	{delete this->root;}
+
+	void swap(CompressedTrie& _trie)
+	{
+		std::swap(this->root, _trie.root);
+	}
 
 #if __cplusplus >= 201103L
 	void lock(){this->once_operation.lock();}
@@ -220,7 +279,7 @@ void Trie<T>::erase(const std::string& name)
 	while(actual_node!=this->root)
 	{
 		removed_node=actual_node;
-		for(int i=0; i<256; ++i)
+		for(short i=0; i<256; ++i)
 			if(removed_node->son[i]!=NULL)
 				goto erase_end;
 		actual_node=actual_node->parent;

@@ -36,28 +36,28 @@ public:
 
 	void swap(mvector& _v)
 	{
-		swap(this->arr, _v.arr);
-		swap(this->_size, _v._size);
-		swap(this->arr_size, _v.arr_size);
+		swap(arr, _v.arr);
+		swap(_size, _v._size);
+		swap(arr_size, _v.arr_size);
 	}
 
 	size_type size()
-	{return this->_size;}
+	{return _size;}
 
 	void resize(size_type, const type& = type());
 	void push_back(const type& val)
 	{
-		this->resize(++this->_size, val);
+		resize(++_size, val);
 	}
 
 	void pop_back()
-	{--this->_size;}
+	{--_size;}
 
 	type& front()
-	{return *this->arr;}
+	{return *arr;}
 
 	type& back()
-	{return this->arr[this->_size-1];}
+	{return arr[_size-1];}
 
 	void clear()
 	{mvector<type>().swap(*this);}
@@ -70,58 +70,58 @@ template<typename type>
 mvector<type>::mvector(size_type n, const type& val)
 :_size(n),
  arr_size(CeilToPowerOf2(n)),
- arr(new type[this->arr_size])
+ arr(new type[arr_size])
 {
-	for(size_type i=0; i<this->_size; ++i)
-		this->arr[i]=val;
+	for(size_type i=0; i<_size; ++i)
+		arr[i]=val;
 }
 
 template<typename type>
 mvector<type>::mvector(const mvector& _v)
 :_size(_v._size),
  arr_size(_v.arr_size),
- arr(new type[this->arr_size])
+ arr(new type[arr_size])
 {
-	for(size_type i=0; i<this->_size; ++i)
-		this->arr[i]=_v.arr[i];
+	for(size_type i=0; i<_size; ++i)
+		arr[i]=_v.arr[i];
 }
 
 template<typename type>
 void mvector<type>::resize(size_type n, const type& val)
 {
-	if(n<=this->arr_size)
+	if(n<=arr_size)
 	{
-		if(n>this->_size)
-			for(size_type i=this->_size; i<n; ++i)
-				this->arr[i]=val;
+		if(n>_size)
+			for(size_type i=_size; i<n; ++i)
+				arr[i]=val;
 	}
 	else
 	{
-		this->arr_size=CeilToPowerOf2(n);
-		type* new_arr=new type[this->arr_size];
-		for(size_type i=0; i<this->_size; ++i)
-			new_arr[i]=this->arr[i];
-		for(size_type i=this->_size; i<n; ++i)
+		arr_size=CeilToPowerOf2(n);
+		type* new_arr=new type[arr_size];
+		for(size_type i=0; i<_size; ++i)
+			new_arr[i]=arr[i];
+		for(size_type i=_size; i<n; ++i)
 			new_arr[i]=val;
-		delete[] this->arr;
-		this->arr=new_arr;
+		delete[] arr;
+		arr=new_arr;
 	}
-	this->_size=n;
+	_size=n;
 }
 
 /*template<typename type>
 void mvector<type>::push_back(const type& val)
 {
-	if(this->_size==this->arr_size)
+	if(_size==arr_size)
 	{
-		if(this->arr_size==0) ++this->arr_size;
-		type* new_arr=new type[this->arr_size<<=1];
-		for(int i=0; i<this->_size; ++i)
-			new_arr[i]=this->arr[i];
-		delete[] this->arr;
-		this->arr=new_arr;
+		if(arr_size==0) ++arr_size;
+		type* new_arr=new type[arr_size<<=1];
+		for(int i=0; i<_size; ++i)
+			new_arr[i]=arr[i];
+		delete[] arr;
+		arr=new_arr;
 	}
-	this->arr[this->_size++]=val;
+	arr[_size++]=val;
 }*/
 
 struct lol
@@ -129,7 +129,7 @@ struct lol
 	int a, b, c, d;
 	lol(int k=0): a(k), b(k), c(k), d(k){}
 	~lol(){}
-	operator int(){return this->a;}
+	operator int(){return a;}
 };
 
 int main(int argc, char **argv)

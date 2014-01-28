@@ -28,8 +28,8 @@ struct my_it
 	~my_it(){}
 	bool operator<(const my_it& _it) const
 	{
-		// if(this->wsk->val==_it.wsk->val) return this->wsk->get()<_it.wsk->get();
-	return this->wsk->val<_it.wsk->val;
+		// if(wsk->val==_it.wsk->val) return wsk->get()<_it.wsk->get();
+	return wsk->val<_it.wsk->val;
 	}
 };
 

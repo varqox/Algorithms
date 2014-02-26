@@ -83,7 +83,7 @@ void output(fstream& file, const vector<bool>& vb)
 	}
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char const *argv[])
 {
 	if(argc!=3)
 	{

@@ -23,16 +23,16 @@ export UPDATE = $(CP) -u
 export RM = rm -f
 export MKDIR = mkdir -p
 
-all: kmp spr gen aho
+all: kmp judge gen aho
 
 kmp: kmp.cpp
 	$(LINK) $< $(LFLAGS) -o $@
 
-spr: spr.cpp
+judge: judge.cpp
 	$(LINK) $< $(LFLAGS) -o $@
 
 gen: gen.cpp
 	$(LINK) $< $(LFLAGS) -o $@
 
-aho: aho.cpp
+aho: aho.cpp ../text/aho.cpp ../text/aho.hpp
 	$(LINK) $< $(LFLAGS) -o $@

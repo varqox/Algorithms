@@ -42,7 +42,7 @@ int main()
 	int t;
 	cin >> t;
 	fstream test;
-	system("rm tests/aho/*");
+	system("mkdir -p tests/aho; rm -r -f tests/aho/*");
 	for(int q=1; q<=t; ++q)
 	{
 		string in, in1, out, spr, test_name;

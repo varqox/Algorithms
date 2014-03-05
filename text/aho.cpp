@@ -20,7 +20,7 @@ int aho::class_trie::add_word(const string& word, int id)
 return graph[ver].pattern_id;
 }
 
-void aho::class_trie::add_fails() // and the longest shorter patterns, based on BFS algorithm
+void aho::class_trie::add_fails() // add the longest shorter patterns, based on BFS algorithm
 {
 	queue<int> V;
 	// add root childrens
@@ -39,14 +39,14 @@ void aho::class_trie::add_fails() // and the longest shorter patterns, based on 
 		{
 			if(graph[actual].E[i]!=0) // if children exists
 			{
-				actual=graph[actual].fail; // we have view node parent's fial edge
-				while(actual>0 && graph[actual].E[i]==0) // while we don't have node with children of actual character (i)
+				actual=graph[actual].fail; // we have view on parent's fail edge
+				while(actual>0 && graph[actual].E[i]==0) // while we haven't node with children node of actual character (i)
 					actual=graph[actual].fail;
-				actual=graph[graph[V.front()].E[i]].fail=graph[actual].E[i]; // the longest sufix, if 0 then longest sufix = root
+				actual=graph[graph[V.front()].E[i]].fail=graph[actual].E[i]; // the longest common sufix, if 0 then longest sufix = root
 				// add the longest shorter pattern
-				if(graph[actual].is_pattern) // if the fail node is pattern then is long_sh_pat
+				if(graph[actual].is_pattern) // if the fail node is pattern then it's long_sh_pat
 					graph[graph[V.front()].E[i]].long_sh_pat=actual;
-				else // long_sh_pat is the fail node's long_sh_pat
+				else // long_sh_pat is the long_sh_pat of fail node
 					graph[graph[V.front()].E[i]].long_sh_pat=graph[actual].long_sh_pat;
 				actual=V.front();
 				V.push(graph[actual].E[i]); // add this children to queue
@@ -61,7 +61,7 @@ void aho::find(const vector<string>& patterns, const string& text)
 	vector<class_trie::node>().swap(trie.graph); // clear trie::graph
 	vector<vector<unsigned>* >().swap(fin); // clear fin
 	fin.resize(patterns.size()); // set number of patterns
-	// trie::init(); 
+	// trie::init();
 	class_trie().swap(trie); // initialize trie
 	unsigned tmp;
 	for(int i=patterns.size()-1; i>=0; --i) // add patterns to trie
@@ -109,7 +109,7 @@ int special_aho::class_trie::add_word(const string& word, int id)
 return graph[ver].pattern_id;
 }
 
-void special_aho::class_trie::add_fails() // and the longest shorter patterns, based on BFS algorithm
+void special_aho::class_trie::add_fails() // add the longest shorter patterns, based on BFS algorithm
 {
 	queue<int> V;
 	// add root childrens
@@ -128,14 +128,14 @@ void special_aho::class_trie::add_fails() // and the longest shorter patterns, b
 		{
 			if(graph[actual].E[i]!=0) // if children exists
 			{
-				actual=graph[actual].fail; // we have view node parent's fial edge
-				while(actual>0 && graph[actual].E[i]==0) // while we don't have node with children of actual character (i)
+				actual=graph[actual].fail; // we have view on parent's fail edge
+				while(actual>0 && graph[actual].E[i]==0) // while we haven't node with children node of actual character (i)
 					actual=graph[actual].fail;
-				actual=graph[graph[V.front()].E[i]].fail=graph[actual].E[i]; // the longest sufix, if 0 then longest sufix = root
+				actual=graph[graph[V.front()].E[i]].fail=graph[actual].E[i]; // the longest common sufix, if 0 then longest sufix = root
 				// add the longest shorter pattern
-				if(graph[actual].is_pattern) // if the fail node is pattern then is long_sh_pat
-					graph[graph[V.front()].E[i]].long_sh_pat=actual; // long_sh_pat is the fail node's long_sh_pat
-				else 
+				if(graph[actual].is_pattern) // if the fail node is pattern then it's long_sh_pat
+					graph[graph[V.front()].E[i]].long_sh_pat=actual;
+				else // long_sh_pat is the long_sh_pat of fail node
 					graph[graph[V.front()].E[i]].long_sh_pat=graph[actual].long_sh_pat;
 				actual=V.front();
 				V.push(graph[actual].E[i]); // add this children to queue

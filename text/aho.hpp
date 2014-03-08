@@ -45,7 +45,7 @@ protected:
 		~node()
 		{
 			for(int i = 0; i != 256; ++i)
-				if(son[i]!=NULL)
+				if(son[i] != NULL)
 					delete son[i];
 		}
 
@@ -53,12 +53,12 @@ protected:
 		{
 			is_pattern = nd->is_pattern;
 			key = nd->key;
+			pattern_id = nd->pattern_id;
 			for(int i = 0; i != 256; ++i)
-				if(son[i])
-					delete son[i], son[i] = NULL;
-			for(int i = 0; i != 256; ++i)
-				if(son[i])
-					son[i] = new node(*nd->son[i]);
+				if(nd->son[i])
+					son[i] = new node(*nd->son[i]), son[i]->copy(nd->son[i]);
+				else
+					son[i] = NULL;
 		}
 	};
 

@@ -45,12 +45,11 @@ protected:
 		void copy(_ptr nd)
 		{
 			is_pattern = nd->is_pattern;
+			pattern_id = nd->pattern_id;
 			key = nd->key;
-			for(son_type::iterator i = son.begin(); i != son.end(); ++i)
-				delete i->second;
 			son.clear();
 			for(son_type::iterator i = nd->son.begin(); i != nd->son.end(); ++i)
-				son.insert(std::make_pair(i->first, new node(*i->second)));
+				son.insert(std::make_pair(i->first, new node(*i->second)))->second->copy(i->second);
 		}
 	};
 
@@ -75,6 +74,8 @@ protected:
 
 	compressed_aho_base& operator=(const compressed_aho_base& ab)
 	{
+		delete root;
+		root = new node;
 		root->copy(ab.root);
 		root->fail = root->long_sh_pat = root;
 		add_fails();

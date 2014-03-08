@@ -50,14 +50,15 @@ int main()
 		for(int i=rd()%1000000; i>=0; --i) // gen text
 			in+=static_cast<char>(rd()%26+'a');
 		in+='\n';
-		for(int i=rd()%100; i>=0; --i)
+		int n=rd()%100;
+		for(int i=n; i>0; --i)
 		{
 			for(int j=rd()%17+1; j>=0; --j)
 				in1+=static_cast<char>(rd()%26+'a');
 			in1+='\n';
 		}
 		test.open((test_name+".in").c_str(), ios_base::out);
-		test << in << in1 << endl;
+		test << in << n << '\n' << in1 << endl;
 		test.close();
 		system(("./kmp < "+test_name+".in > "+test_name+".out").c_str());
 		cout << q << ": generated!\n";

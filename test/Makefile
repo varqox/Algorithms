@@ -23,6 +23,8 @@ export UPDATE = $(CP) -u
 export RM = rm -f
 export MKDIR = mkdir -p
 
+.PHONY: all clean clean-all
+
 all: kmp judge gen aho
 
 kmp: kmp.cpp
@@ -36,3 +38,9 @@ gen: gen.cpp
 
 aho: aho.cpp ../text/aho.cpp ../text/aho.hpp
 	$(LINK) $< $(LFLAGS) -o $@
+
+clean:
+	$(RM) *.o
+
+clean-all: clean
+	$(RM) kmp judge gen aho

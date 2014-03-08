@@ -46,7 +46,7 @@ int main()
 		wys=kmp(text, pat);
 		while(!wys.empty())
 		{
-			cout << ' ' << wys.front();
+			cout << ' ' << wys.front()-pat.size()+1;
 			wys.pop();
 		}
 		cout << endl;

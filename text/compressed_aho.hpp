@@ -4,31 +4,26 @@
 #include <string>
 #include <vector>
 
-class aho_base
+class compressed_aho_base
 {
 protected:
-	// node of Trie tree
+	// node of Compressed Trie tree
 	struct node
 	{
 		typedef node* _ptr;
+		typedef std::multimap<unsigned char, _ptr> son_type;
 
 		bool is_pattern;
 		unsigned char key;
 		unsigned pattern_id; // pattern id
 		_ptr fail, long_sh_pat; // fail pointer, the longest shorter pattern
-		_ptr son[256];
+		son_type son;
 
-		node(unsigned char _k = 0, bool _ip = false, _ptr _f = NULL, _ptr _l = NULL): is_pattern(_ip), key(_k), pattern_id(), fail(_f), long_sh_pat(_l)
-		{
-			for(int i = 0; i < 256; ++i)
-				son[i] = NULL;
-		}
+		node(unsigned char _k = 0, bool _ip = false, _ptr _f = NULL, _ptr _l = NULL): is_pattern(_ip), key(_k), pattern_id(), fail(_f), long_sh_pat(_l), son()
+		{}
 
-		node(const node& nd): is_pattern(nd.is_pattern), key(nd.key), pattern_id(nd.pattern_id), fail(nd.fail), long_sh_pat(nd.long_sh_pat)
-		{
-			for(int i = 0; i < 256; ++i)
-				son[i] = nd.son[i];
-		}
+		node(const node& nd): is_pattern(nd.is_pattern), key(nd.key), pattern_id(nd.pattern_id), fail(nd.fail), long_sh_pat(nd.long_sh_pat), son(nd.son)
+		{}
 
 		node& operator=(const node& nd)
 		{
@@ -37,28 +32,25 @@ protected:
 			pattern_id = nd.pattern_id;
 			fail = nd.fail;
 			long_sh_pat = nd.long_sh_pat;
-			for(int i = 0; i < 256; ++i)
-				son[i] = nd.son[i];
+			son = nd.son;
 			return *this;
 		}
 
 		~node()
 		{
-			for(int i = 0; i != 256; ++i)
-				if(son[i]!=NULL)
-					delete son[i];
+			for(son_type::iterator i = son.begin(); i != son.end(); ++i)
+				delete i->second;
 		}
 
 		void copy(_ptr nd)
 		{
 			is_pattern = nd->is_pattern;
 			key = nd->key;
-			for(int i = 0; i != 256; ++i)
-				if(son[i])
-					delete son[i], son[i] = NULL;
-			for(int i = 0; i != 256; ++i)
-				if(son[i])
-					son[i] = new node(*nd->son[i]);
+			for(son_type::iterator i = son.begin(); i != son.end(); ++i)
+				delete i->second;
+			son.clear();
+			for(son_type::iterator i = nd->son.begin(); i != nd->son.end(); ++i)
+				son.insert(std::make_pair(i->first, new node(*i->second)));
 		}
 	};
 
@@ -69,19 +61,19 @@ protected:
 	// returns real id of inserted word
 	unsigned insert(const std::string& word, unsigned id);
 
-	aho_base(): root(new node)
+	compressed_aho_base(): root(new node)
 	{
 		root->fail = root->long_sh_pat = root;
 	}
 
-	aho_base(const aho_base& ab): root(new node)
+	compressed_aho_base(const compressed_aho_base& ab): root(new node)
 	{
 		root->copy(ab.root);
 		root->fail = root->long_sh_pat = root;
 		add_fails();
 	}
 
-	aho_base& operator=(const aho_base& ab)
+	compressed_aho_base& operator=(const compressed_aho_base& ab)
 	{
 		root->copy(ab.root);
 		root->fail = root->long_sh_pat = root;
@@ -89,23 +81,23 @@ protected:
 		return *this;
 	}
 
-	virtual ~aho_base()
+	virtual ~compressed_aho_base()
 	{
 		delete root;
 	}
 };
 
-class aho : public aho_base
+class compressed_aho : public compressed_aho_base
 {
 protected:
 	std::vector<std::vector<unsigned>*> fin; // finded patterns
 	std::vector<unsigned> fin_id; // tells real (in Trie) id of pattern
 
 public:
-	aho(): aho_base(), fin(), fin_id()
+	compressed_aho(): compressed_aho_base(), fin(), fin_id()
 	{}
 
-	aho(const aho& _a): aho_base(_a), fin(_a.fin), fin_id(_a.fin_id)
+	compressed_aho(const compressed_aho& _a): compressed_aho_base(_a), fin(_a.fin), fin_id(_a.fin_id)
 	{
 		for(unsigned i = 0, s = fin.size(); i < s; ++i)
 		{
@@ -116,9 +108,9 @@ public:
 		}
 	}
 
-	aho& operator=(aho& _a)
+	compressed_aho& operator=(compressed_aho& _a)
 	{
-		aho_base::operator=(_a);
+		compressed_aho_base::operator=(_a);
 		fin = _a.fin;
 		fin_id = _a.fin_id;
 		for(unsigned i = 0, s = fin.size(); i < s; ++i)
@@ -131,14 +123,14 @@ public:
 		return *this;
 	}
 
-	virtual ~aho()
+	virtual ~compressed_aho()
 	{
 		for(unsigned i = 0, s = fin.size(); i < s; ++i)
 			if(fin_id[i] == i)
 				delete fin[i];
 	}
 
-	void swap(aho& _a)
+	void swap(compressed_aho& _a)
 	{
 		std::swap(root, _a.root);
 		std::swap(fin, _a.fin);
@@ -158,38 +150,38 @@ public:
 };
 
 template<class T>
-class special_aho : public aho_base
+class special_compressed_aho : public compressed_aho_base
 {
 protected:
 	std::vector<int> fin; // finded patterns occurrences
 	std::vector<std::pair<std::string, T> > patterns;
 
 public:
-	special_aho(): aho_base(), fin(), patterns()
+	special_compressed_aho(): compressed_aho_base(), fin(), patterns()
 	{}
 
-	special_aho(const special_aho& _a): aho_base(_a), fin(_a.fin), patterns(_a.patterns)
+	special_compressed_aho(const special_compressed_aho& _a): compressed_aho_base(_a), fin(_a.fin), patterns(_a.patterns)
 	{}
 
-	special_aho& operator=(special_aho& _a)
+	special_compressed_aho& operator=(special_compressed_aho& _a)
 	{
-		aho_base::operator=(_a);
+		compressed_aho_base::operator=(_a);
 		fin = _a.fin;
 		patterns = _a.patterns;
 		return *this;
 	}
 
-	virtual ~special_aho()
+	virtual ~special_compressed_aho()
 	{}
 
-	void swap(special_aho& _a)
+	void swap(special_compressed_aho& _a)
 	{
 		std::swap(root, _a.root);
 		std::swap(fin, _a.fin);
 		std::swap(patterns, _a.patterns);
 	}
 
-	std::vector<int>::size_type size() const
+	std::vector<unsigned>::size_type size() const
 	{return fin.size();}
 
 	int& operator[](std::vector<int>::size_type n)
@@ -206,7 +198,7 @@ public:
 };
 
 template<class T>
-void special_aho<T>::set_patterns(const std::vector<std::pair<std::string, T> >& new_patterns)
+void special_compressed_aho<T>::set_patterns(const std::vector<std::pair<std::string, T> >& new_patterns)
 {
 	patterns = new_patterns;
 	// clear Trie
@@ -220,19 +212,20 @@ void special_aho<T>::set_patterns(const std::vector<std::pair<std::string, T> >&
 }
 
 template<class T>
-void special_aho<T>::find(const std::string& text)
+void special_compressed_aho<T>::find(const std::string& text)
 {
 	// clear fin
 	fin.resize(text.size());
 	node::_ptr actual = root, found; // actual node and auxiliary pointer (to finding patterns)
+	node::son_type::iterator it;
 	for(unsigned i = 0, s = text.size(); i < s; ++i)
 	{
 		// we search for node wich has soon with key == *i
-		while(actual != root && actual->son[static_cast<unsigned char>(text[i])] == NULL)
+		while((it = actual->son.find(text[i])) == actual->son.end() && actual != root)
 			actual = actual->fail;
 		// if we find this son (else actual == root)
-		if(actual->son[static_cast<unsigned char>(text[i])] != NULL)
-			actual = actual->son[static_cast<unsigned char>(text[i])];
+		if(it != actual->son.end())
+			actual = it->second;
 		// default value (if none pattern will be found)
 		fin[i] = -1;
 		// if actual node is pattern then we'll add it to fin

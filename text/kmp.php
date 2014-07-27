@@ -3,7 +3,7 @@
 /**
  * Implementation of the Knuth-Morris-Pratt Algorithm
  *
- * @copyright   Copyright (c) 2013, Maciej Czyżewski <pozer.maciek@gmail.com>
+ * @copyright   Copyright (c) 2013, Maciej A. Czyzewski <maciejanthonyczyzewski@gmail.com>
  * @license     MIT
  */
 

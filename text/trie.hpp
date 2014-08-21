@@ -1,8 +1,8 @@
 #include <string>
 #include <map>
 
-#if __cplusplus >= 201103L
-#include <mutex>
+#ifdef TRIE_USE_MUTEX
+ #include <mutex>
 #endif
 
 #pragma once
@@ -13,7 +13,7 @@ template<class T>
 class Trie
 {
 protected:
-#if __cplusplus >= 201103L
+#ifdef TRIE_USE_MUTEX
 	std::mutex once_operation;
 #endif
 	class node
@@ -67,7 +67,7 @@ public:
 		friend class Trie;
 	};
 
-#if __cplusplus >= 201103L
+#ifdef TRIE_USE_MUTEX
 	Trie(): once_operation(), root(new node(NULL)){}
 	Trie(const Trie& _trie): once_operation(), root(new node(NULL, _trie.root)){}
 #else
@@ -90,7 +90,7 @@ public:
 		std::swap(root, _trie.root);
 	}
 
-#if __cplusplus >= 201103L
+#ifdef TRIE_USE_MUTEX
 	void lock(){once_operation.lock();}
 	void unlock(){once_operation.unlock();}
 #endif
@@ -115,7 +115,7 @@ template<class T>
 class CompressedTrie
 {
 protected:
-#if __cplusplus >= 201103L
+#ifdef TRIE_USE_MUTEX
 	std::mutex once_operation;
 #endif
 	class node
@@ -164,7 +164,7 @@ public:
 		friend class CompressedTrie;
 	};
 
-#if __cplusplus >= 201103L
+#ifdef TRIE_USE_MUTEX
 	CompressedTrie(): once_operation(), root(new node(NULL)){}
 	CompressedTrie(const CompressedTrie& _trie): once_operation(), root(new node(NULL, _trie.root)){}
 #else
@@ -187,7 +187,7 @@ public:
 		std::swap(root, _trie.root);
 	}
 
-#if __cplusplus >= 201103L
+#ifdef TRIE_USE_MUTEX
 	void lock(){once_operation.lock();}
 	void unlock(){once_operation.unlock();}
 #endif
@@ -239,7 +239,7 @@ return (actual_node->is_pattern ? iterator(actual_node):end());
 template<class T>
 std::pair<typename Trie<T>::iterator, bool> Trie<T>::insert(const std::string& name)
 {
-#if __cplusplus >= 201103L
+#ifdef TRIE_USE_MUTEX
 	once_operation.lock();
 #endif
 	node* actual_node=root;
@@ -251,14 +251,14 @@ std::pair<typename Trie<T>::iterator, bool> Trie<T>::insert(const std::string& n
 	}
 	if(actual_node->is_pattern)
 	{
-	#if __cplusplus >= 201103L
+	#ifdef TRIE_USE_MUTEX
 		once_operation.unlock();
 	#endif
 		return std::make_pair(iterator(actual_node), false);
 	}
 	actual_node->is_pattern=true;
 	actual_node->value=new T();
-#if __cplusplus >= 201103L
+#ifdef TRIE_USE_MUTEX
 	once_operation.unlock();
 #endif
 	return std::make_pair(iterator(actual_node), true);
@@ -267,7 +267,7 @@ std::pair<typename Trie<T>::iterator, bool> Trie<T>::insert(const std::string& n
 template<class T>
 void Trie<T>::erase(const std::string& name)
 {
-#if __cplusplus >= 201103L
+#ifdef TRIE_USE_MUTEX
 	once_operation.lock();
 #endif
 	node* actual_node=find(name).p;
@@ -287,7 +287,7 @@ void Trie<T>::erase(const std::string& name)
 		delete removed_node;
 	}
 erase_end:;
-#if __cplusplus >= 201103L
+#ifdef TRIE_USE_MUTEX
 	once_operation.unlock();
 #endif
 }
@@ -325,7 +325,7 @@ return (actual_node->is_pattern ? iterator(actual_node):end());
 template<class T>
 std::pair<typename CompressedTrie<T>::iterator, bool> CompressedTrie<T>::insert(const std::string& name)
 {
-#if __cplusplus >= 201103L
+#ifdef TRIE_USE_MUTEX
 	once_operation.lock();
 #endif
 	node* actual_node=root;
@@ -338,14 +338,14 @@ std::pair<typename CompressedTrie<T>::iterator, bool> CompressedTrie<T>::insert(
 	}
 	if(actual_node->is_pattern)
 	{
-	#if __cplusplus >= 201103L
+	#ifdef TRIE_USE_MUTEX
 		once_operation.unlock();
 	#endif
 		return std::make_pair(iterator(actual_node), false);
 	}
 	actual_node->is_pattern=true;
 	actual_node->value=new T();
-#if __cplusplus >= 201103L
+#ifdef TRIE_USE_MUTEX
 	once_operation.unlock();
 #endif
 	return std::make_pair(iterator(actual_node), true);
@@ -354,7 +354,7 @@ std::pair<typename CompressedTrie<T>::iterator, bool> CompressedTrie<T>::insert(
 template<class T>
 void CompressedTrie<T>::erase(const std::string& name)
 {
-#if __cplusplus >= 201103L
+#ifdef TRIE_USE_MUTEX
 	once_operation.lock();
 #endif
 	node* actual_node=find(name).p;
@@ -373,7 +373,7 @@ void CompressedTrie<T>::erase(const std::string& name)
 		delete removed_node;
 	}
 erase_end:;
-#if __cplusplus >= 201103L
+#ifdef TRIE_USE_MUTEX
 	once_operation.unlock();
 #endif
 }

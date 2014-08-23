@@ -9,20 +9,20 @@ void maxheapify(type* heap, unsigned int heap_size, unsigned int idx=0)
 	--heap;
 	++idx;
 	unsigned int son, next=idx, prev;
-	type tmp=heap[idx];
-	while(prev=next, true)
+	type tmp = heap[idx];
+	while(prev = next, true)
 	{
-		son=next<<1;
-		if(son<=heap_size && tmp<heap[son])
+		son = next << 1;
+		if(son <= heap_size && tmp < heap[son])
 		{
-			next=son;
-			if(++son<=heap_size && heap[next]<heap[son])
-				next=son;
-			heap[prev]=heap[next];
+			if(son + 1 <= heap_size && heap[son] < heap[son+1])
+				++son;
 		}
-		else if(++son<=heap_size && tmp<heap[son])
-			heap[prev]=heap[next=son];
-		else break;
+		else if(son + 1 <= heap_size && tmp < heap[son+1])
+			++son;
+		else
+			break;
+		heap[prev] = heap[next = son];
 	}
 	heap[next]=tmp;
 }

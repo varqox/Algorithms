@@ -208,7 +208,7 @@ public:
 
 // Methods of Trie and CompressedTrie
 
-namespace std
+namespace __Trie
 {
 	template <class BidirectionalIterator>
 	void reverse(BidirectionalIterator first, BidirectionalIterator last)
@@ -302,7 +302,7 @@ std::string Trie<T>::get_name(const iterator& _it)
 		out+=actual_node->key;
 		actual_node=actual_node->parent;
 	}
-	std::reverse(out.begin(), out.end());
+	__Trie::reverse(out.begin(), out.end());
 return out;
 }
 
@@ -388,6 +388,6 @@ std::string CompressedTrie<T>::get_name(const iterator& _it)
 		out+=actual_node->key;
 		actual_node=actual_node->parent;
 	}
-	std::reverse(out.begin(), out.end());
+	__Trie::reverse(out.begin(), out.end());
 return out;
 }

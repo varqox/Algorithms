@@ -7,7 +7,7 @@
 
 #pragma once
 
-// Trie
+namespace Trie {
 
 template<class T>
 class Trie
@@ -224,10 +224,10 @@ namespace __Trie
 // Trie
 
 template<class T>
-typename Trie<T>::iterator Trie<T>::find(const std::string& name) const
+typename Trie<T>::iterator Trie<T>::find(const std::string& _name) const
 {
 	node* actual_node=root;
-	for(std::string::const_iterator i=name.begin(); i!=name.end(); ++i)
+	for(std::string::const_iterator i=_name.begin(); i!=_name.end(); ++i)
 	{
 		if(actual_node->son[static_cast<unsigned char>(*i)]==NULL)
 			return end();
@@ -237,13 +237,13 @@ return (actual_node->is_pattern ? iterator(actual_node):end());
 }
 
 template<class T>
-std::pair<typename Trie<T>::iterator, bool> Trie<T>::insert(const std::string& name)
+std::pair<typename Trie<T>::iterator, bool> Trie<T>::insert(const std::string& _name)
 {
 #ifdef TRIE_USE_MUTEX
 	once_operation.lock();
 #endif
 	node* actual_node=root;
-	for(std::string::const_iterator i=name.begin(); i!=name.end(); ++i)
+	for(std::string::const_iterator i=_name.begin(); i!=_name.end(); ++i)
 	{
 		if(actual_node->son[static_cast<unsigned char>(*i)]==NULL)
 			actual_node->son[static_cast<unsigned char>(*i)]=new node(actual_node, *i);
@@ -265,12 +265,12 @@ std::pair<typename Trie<T>::iterator, bool> Trie<T>::insert(const std::string& n
 }
 
 template<class T>
-void Trie<T>::erase(const std::string& name)
+void Trie<T>::erase(const std::string& _name)
 {
 #ifdef TRIE_USE_MUTEX
 	once_operation.lock();
 #endif
-	node* actual_node=find(name).p;
+	node* actual_node=find(_name).p;
 	if(actual_node==NULL)
 		goto erase_end;
 	actual_node->is_pattern=false;
@@ -309,11 +309,11 @@ return out;
 // CompressedTrie
 
 template<class T>
-typename CompressedTrie<T>::iterator CompressedTrie<T>::find(const std::string& name) const
+typename CompressedTrie<T>::iterator CompressedTrie<T>::find(const std::string& _name) const
 {
 	node* actual_node=root;
 	typename node::son_type::iterator it;
-	for(std::string::const_iterator i=name.begin(); i!=name.end(); ++i)
+	for(std::string::const_iterator i=_name.begin(); i!=_name.end(); ++i)
 	{
 		if(actual_node->son.end()==(it=actual_node->son.find(*i)))
 			return end();
@@ -323,14 +323,14 @@ return (actual_node->is_pattern ? iterator(actual_node):end());
 }
 
 template<class T>
-std::pair<typename CompressedTrie<T>::iterator, bool> CompressedTrie<T>::insert(const std::string& name)
+std::pair<typename CompressedTrie<T>::iterator, bool> CompressedTrie<T>::insert(const std::string& _name)
 {
 #ifdef TRIE_USE_MUTEX
 	once_operation.lock();
 #endif
 	node* actual_node=root;
 	typename node::son_type::iterator it;
-	for(std::string::const_iterator i=name.begin(); i!=name.end(); ++i)
+	for(std::string::const_iterator i=_name.begin(); i!=_name.end(); ++i)
 	{
 		if(actual_node->son.end()==(it=actual_node->son.find(*i)))
 			it=actual_node->son.insert(std::make_pair(*i, new node(actual_node, *i)));
@@ -352,12 +352,12 @@ std::pair<typename CompressedTrie<T>::iterator, bool> CompressedTrie<T>::insert(
 }
 
 template<class T>
-void CompressedTrie<T>::erase(const std::string& name)
+void CompressedTrie<T>::erase(const std::string& _name)
 {
 #ifdef TRIE_USE_MUTEX
 	once_operation.lock();
 #endif
-	node* actual_node=find(name).p;
+	node* actual_node=find(_name).p;
 	if(actual_node==NULL)
 		goto erase_end;
 	actual_node->is_pattern=false;
@@ -391,3 +391,5 @@ std::string CompressedTrie<T>::get_name(const iterator& _it)
 	__Trie::reverse(out.begin(), out.end());
 return out;
 }
+
+} // namespace Trie

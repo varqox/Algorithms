@@ -1,46 +1,59 @@
-# Compile commands
-ifeq ($(shell clang > /dev/null 2> /dev/null; echo $$?), $(shell echo 1))
-export CC = clang
+export
+
+# Extra options to compile project with
+EXTRA_OPTIONS = -O3
+
+# Extra options to link project with
+EXTRA_LD_OPTIONS = -s -O3
+
+# Warnings options to compile project with
+WARNING_OPTIONS = -Wall -Wextra -Wabi -Weffc++ -Wshadow -Wfloat-equal -Wno-unused-result
+
+CFLAGS = $(WARNING_OPTIONS) $(EXTRA_OPTIONS) -c
+CXXFLAGS = $(CFLAGS)
+LFLAGS = $(WARNING_OPTIONS) $(EXTRA_LD_OPTIONS)
+
+ifeq ($(VERBOSE),1)
+	Q :=
+	P =
 else
-export CC = gcc
-endif
-ifeq ($(shell clang++ > /dev/null 2> /dev/null; echo $$?), $(shell echo 1))
-export CXX = clang++
-export LINK = clang++
-else
-export CXX = g++
-export LINK = g++
+	Q := @
+	P = printf "   $$(1)\t $$(subst $(ROOT),,$$(abspath $$(2)))\n";
+	override MFLAGS += --no-print-directory -s
 endif
 
-export CFLAGS = -Wall -Wextra -Wabi -Weffc++ -Wshadow -Wfloat-equal -Wno-unused-result -O3 -c
-export CXXFLAGS = -Wall -Wextra -Wabi -Weffc++ -Wshadow -Wfloat-equal -Wno-unused-result -O3 -c
-export LFLAGS = -Wall -Wextra -Wabi -Weffc++ -Wshadow -Wfloat-equal -Wno-unused-result -s -O3
+PHONY := all
+all:
+	@printf "CC -> $(CC)\nCXX -> $(CXX)\n"
+	$(Q)$(MAKE) $(MFLAGS) -f Makefile2
+	@printf "\033[;32mBuild finished\033[0m\n"
 
-# Shell commands
-export MV = mv -f
-export CP = cp -f -r
-export UPDATE = $(CP) -u
-export RM = rm -f
-export MKDIR = mkdir -p
+PHONY += release
+release: override RELEASE=1
+release: override EXTRA_LD_OPTIONS += -static
+release: clean
+	@printf "CC -> $(CC)\nCXX -> $(CXX)\n"
+	$(Q)$(MAKE) $(MFLAGS) -f Makefile2
+	@printf "\033[;32mBuild finished\033[0m\n"
 
-.PHONY: all clean clean-all
 
-all: kmp judge gen aho
+PHONY += debug
+debug: override CC += -DDEBUG
+debug: override CXX += -DDEBUG
+debug: override CFLAGS = $(WARNING_OPTIONS) -g -c
+debug: override CXXFLAGS = $(WARNING_OPTIONS) -g -c
+debug: override LFLAGS = $(WARNING_OPTIONS) -g
+debug:
+	@printf "CC -> $(CC)\nCXX -> $(CXX)\n"
+	$(Q)$(MAKE) $(MFLAGS) -f Makefile2
+	@printf "\033[;32mBuild finished\033[0m\n"
 
-kmp: kmp.cpp
-	$(LINK) $< $(LFLAGS) -o $@
-
-judge: judge.cpp
-	$(LINK) $< $(LFLAGS) -o $@
-
-gen: gen.cpp
-	$(LINK) $< $(LFLAGS) -o $@
-
-aho: aho.cpp ../text/aho.cpp ../text/aho.hpp
-	$(LINK) $< $(LFLAGS) -o $@
-
+PHONY += clean
 clean:
-	$(RM) *.o
+	@$(MAKE) $(MFLAGS) clean -f Makefile2
 
-clean-all: clean
-	$(RM) kmp judge gen aho
+PHONY += mrproper
+mrproper:
+	@$(MAKE) $(MFLAGS) mrproper -f Makefile2
+
+.PHONY: $(PHONY)

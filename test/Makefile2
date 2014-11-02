@@ -1,0 +1,41 @@
+export
+
+PHONY := all
+all: kmp judge gen aho trie
+
+kmp: kmp.o
+	$(Q)$(call P,LINK,$@)$(CXX) $^ $(LFLAGS) -o $@
+
+judge: judge.o
+	$(Q)$(call P,LINK,$@)$(CXX) $^ $(LFLAGS) -o $@
+
+aho: aho.o
+	$(Q)$(call P,LINK,$@)$(CXX) $^ $(LFLAGS) -o $@
+
+gen: gen.o
+	$(Q)$(call P,LINK,$@)$(CXX) $^ $(LFLAGS) -o $@
+
+trie: trie.o
+	$(Q)$(call P,LINK,$@)$(CXX) $^ $(LFLAGS) -o $@
+
+PHONY += clean
+clean:
+	$(RM) `find . -regex '.*\.\(o\|dep-s\)$$'`
+
+PHONY += mrproper
+mrproper: clean
+	$(RM) kmp judge gen aho trie
+
+.PHONY: $(PHONY)
+
+-include $(shell ls | egrep ".c$$|.cpp$$" | sed "s/$$/.dep-s/")
+
+%.o: %.c
+	$(Q)$(call P,CC,$@)$(CC) $< $(CXXFLAGS) -o $@
+
+%.o: %.cpp
+	$(Q)$(call P,CXX,$@)$(CXX) $< $(CXXFLAGS) -o $@
+
+%.dep-s:
+	@ echo -n "$@ " > $@
+	@$(call P,CC,$@)$(CC) -MM $* >> $@

@@ -12,5 +12,14 @@
 *.la
 *.a
 
+# GNU Make dependences
+*.dep-s
+
+test/aho
+test/gen
+test/judge
+test/kmp
+test/trie
+
 # Others
 test/tests/

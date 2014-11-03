@@ -66,13 +66,6 @@ BaseTrie<BaseNode>::Node::Sons::~Sons() {
 
 template<class BaseNode>
 typename BaseTrie<BaseNode>::Node* BaseTrie<BaseNode>::Node::Sons::operator[](uchar c) {
-	// Simple searching (for speed up)
-	if (size_ < 5) {
-		for (short i = 0; i < size_; ++i)
-			if (t_[i]->key_ == c)
-				return t_[i];
-		return NULL;
-	}
 	// Binary serach
 	short down = 0, up = size_ - 1, mid;
 	while (down < up) {
@@ -84,7 +77,7 @@ typename BaseTrie<BaseNode>::Node* BaseTrie<BaseNode>::Node::Sons::operator[](uc
 		else
 			up = mid - 1;
 	}
-	if (down == up)
+	if (down == up && t_[up]->key_ == c)
 		return t_[up];
 	return NULL;
 }
@@ -249,13 +242,15 @@ using std::endl;
 
 int main() {
 	srand(12984912);
-	// Trie::CompressedTrie<XXX::none> trie;
+	// Trie::CompressedTrie<XXX::None> trie;
 	XXX::Trie<> trie;
-	/*XXX::Trie<char> k;
+	XXX::Trie<char> k;
 	cout << *k.insert("123", '$') << endl;
 	cout << *k.insert("12", ';') << endl;
+	cout << *k.insert("121", '@') << endl;
 	cout << *k.find("123") << endl;
-	cout << *k.find("12") << endl;*/
+	cout << *k.find("12") << endl;
+	cout << *k.find("121") << endl;
 	for (size_t i = 0; i < N; ++i) {
 		string s;
 		for (size_t j = 1 + rand() % MAX_LEN; j > 0; --j)

@@ -110,6 +110,7 @@ void BaseTrie<BaseNode>::Node::Sons::insert(Node* p) {
 			--pos;
 		for (short i = size_; i > pos; --i)
 			t_[i] = t_[i-1];
+		++size_;
 		t_[pos] = p; // Real insert
 	}
 }

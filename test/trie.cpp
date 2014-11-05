@@ -33,8 +33,10 @@ protected:
 
 			~Sons();
 			Node* operator[](uchar c);
+			bool empty() { return size_ == 0; }
 			void insert(Node* p);
-			void erase(uchar c);
+			void erase(Node* p);
+			void erase(uchar c) { erase(operator[](c)); }
 		} sons_;
 
 		Node(uchar key) : key_(key), ins_(false), sons_() {}
@@ -53,6 +55,7 @@ public:
 
 	Node* insert(const std::string str);
 	Node* find(const std::string str);
+	bool erase(const std::string str);
 };
 
 template<class BaseNode>
@@ -109,8 +112,7 @@ void BaseTrie<BaseNode>::Node::Sons::insert(Node* p) {
 }
 
 template<class BaseNode>
-void BaseTrie<BaseNode>::Node::Sons::erase(uchar c) {
-	Node *p = operator[](c); // Find node to erase
+void BaseTrie<BaseNode>::Node::Sons::erase(Node* p) {
 	if (p) { // If exists
 		// Find position
 		short pos = size_;
@@ -147,14 +149,31 @@ typename BaseTrie<BaseNode>::Node* BaseTrie<BaseNode>::insert(const std::string 
 
 template<class BaseNode>
 typename BaseTrie<BaseNode>::Node* BaseTrie<BaseNode>::find(const std::string str) {
-	size_t i = 0, len = str.size();
 	Node *p = root;
-	for (; i < len; ++i) {
+	for (size_t i = 0, len = str.size(); i < len; ++i) {
 		p = p->sons_[str[i]];
 		if (p == NULL)
 			return NULL;
 	}
-	return p;
+	return (p->ins_ ? p : NULL);
+}
+
+template<class BaseNode>
+bool BaseTrie<BaseNode>::erase(const std::string str) {
+	Node *t[str.size()+1];
+	t[0] = root;
+	for (size_t i = 0, len = str.size(); i < len; ++i) {
+		t[i+1] = t[i]->sons_[str[i]];
+		if (t[i+1] == NULL)
+			return false;
+	}
+	if (!t[str.size()]->ins_)
+		return false;
+	t[str.size()]->ins_ = false; // Unmark insertion
+	// Remove unnecessary nodes
+	for (size_t i = str.size(); i > 0 && t[i]->sons_.empty(); --i)
+		t[i-1]->sons_.erase(t[i]);
+	return true;
 }
 
 template<class T>
@@ -207,6 +226,7 @@ public:
 	}
 	iterator insert(const std::string str, T val) { return insert(str, new T(val)); }
 	iterator find(const std::string str) { return iterator(BaseTrie< TrieNode<T> >::find(str)); }
+	using BaseTrie< TrieNode<T> >::erase;
 	iterator end() const { return NULL; }
 };
 
@@ -221,11 +241,11 @@ public:
 	virtual ~Trie() {}
 
 	void insert(const std::string str) { BaseTrie::insert(str); }
-
 	bool find(const std::string str) {
 		Node* p = BaseTrie::find(str);
 		return (p == NULL ? false : p->ins_);
 	}
+	using BaseTrie::erase;
 };
 
 } // namespace XXX
@@ -235,6 +255,7 @@ using std::string;
 const int MAX_LEN = 20, N = 1000000;
 
 #include <iostream>
+#include <set>
 
 using std::cin;
 using std::cout;
@@ -242,15 +263,26 @@ using std::endl;
 
 int main() {
 	srand(12984912);
+	// Trie::Trie<XXX::None> trie;
 	// Trie::CompressedTrie<XXX::None> trie;
 	XXX::Trie<> trie;
 	XXX::Trie<char> k;
 	cout << *k.insert("123", '$') << endl;
 	cout << *k.insert("12", ';') << endl;
 	cout << *k.insert("121", '@') << endl;
+
 	cout << *k.find("123") << endl;
 	cout << *k.find("12") << endl;
 	cout << *k.find("121") << endl;
+
+	cout << k.erase("123") << endl;
+	cout << (k.end() == k.find("12")) << endl << endl;
+
+	cout << k.erase("12") << endl;
+	cout << k.erase("121") << endl;
+	cout << (k.end() == k.find("12")) << endl;
+
+	// std::set<string> mys;
 	for (size_t i = 0; i < N; ++i) {
 		string s;
 		for (size_t j = 1 + rand() % MAX_LEN; j > 0; --j)

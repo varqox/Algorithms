@@ -16,7 +16,7 @@ void aho_base::add_fails()
 		}
 	}
 	node::_ptr actual, x;
-	// until we didn't visit all nodes
+	// until we did not visit all nodes
 	while(V.size())
 	{
 		// view all children of actual

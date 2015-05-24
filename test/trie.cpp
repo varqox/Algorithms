@@ -69,7 +69,7 @@ BaseTrie<BaseNode>::Node::Sons::~Sons() {
 
 template<class BaseNode>
 typename BaseTrie<BaseNode>::Node* BaseTrie<BaseNode>::Node::Sons::operator[](uchar c) {
-	// Binary serach
+	// Binary search
 	short down = 0, up = size_ - 1, mid;
 	while (down < up) {
 		mid = (down + up) >> 1;

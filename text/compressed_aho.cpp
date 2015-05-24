@@ -6,14 +6,14 @@ using namespace std;
 void compressed_aho_base::add_fails()
 {
 	queue<node::_ptr> V;
-	// add root childrens
+	// add root children
 	for(node::son_type::iterator it = root->son.begin(); it != root->son.end(); ++it)
 	{
 		it->second->fail = it->second->long_sh_pat = root;
 		V.push(it->second);
 	}
 	node::_ptr actual;
-	// until we didn't visit all nodes
+	// until we did not visit all nodes
 	while(V.size())
 	{
 		// view all children of actual
@@ -30,7 +30,7 @@ void compressed_aho_base::add_fails()
 			// else it->fail has to point to root
 			else
 				it->second->fail = root;
-			// add the longes shorter pattern
+			// add the longest shorter pattern
 			if(actual->is_pattern) // if actual (fail node) is end of pattern then it is long_sh_pat of it->second
 				it->second->long_sh_pat = actual;
 			else // long_sh_pat of it->second is long_sh_pat of actual
@@ -86,7 +86,7 @@ void compressed_aho::find(const vector<string>& patterns, const string& text)
 	node::son_type::iterator it;
 	for(unsigned i = 0, s = text.size(); i < s; ++i)
 	{
-		// we search for node wich has soon with key == *i
+		// we search for node which has soon with key == *i
 		while((it = actual->son.find(text[i])) == actual->son.end() && actual != root)
 			actual = actual->fail;
 		// if we find this son (else actual == root)
@@ -95,7 +95,7 @@ void compressed_aho::find(const vector<string>& patterns, const string& text)
 		// if actual node is pattern then we'll add it to fin
 		if(actual->is_pattern)
 			fin[actual->pattern_id]->push_back(i - patterns[actual->pattern_id].size() + 1);
-		// find orher patterns
+		// find other patterns
 		found = actual->long_sh_pat;
 		// while found point to pattern
 		while(found != root)

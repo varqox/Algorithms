@@ -373,11 +373,11 @@ namespace ctl
 		bool empty() const
 		{return _M_size == 0;}
 
-		const_iterator begin() const
-		{return const_iterator(nil->right, nil);}
+		iterator begin() const
+		{return iterator(nil->right, nil);}
 
-		const_iterator end() const
-		{return const_iterator(nil, nil);}
+		iterator end() const
+		{return iterator(nil, nil);}
 
 		void swap(const RB_tree& $)
 		{
@@ -393,7 +393,7 @@ namespace ctl
 			root = nil->up = nil->right = nil->left = nil;
 		}
 
-		const_iterator find(const T& k)
+		iterator find(const T& k)
 		{
 			_nptr x = static_cast<_nptr>(root);
 			while(x != nil && k != x->key)
@@ -403,10 +403,10 @@ namespace ctl
 				else
 					x = static_cast<_nptr>(x->right);
 			}
-			return const_iterator(x, nil);
+			return iterator(x, nil);
 		}
 
-		const_iterator lower_bound(const T& k)
+		iterator lower_bound(const T& k)
 		{
 			_Base_nptr x = root, y = nil;
 			while(x != nil)
@@ -416,10 +416,10 @@ namespace ctl
 				else
 					y = x, x = static_cast<_nptr>(x->left);
 			}
-			return const_iterator(y, nil);
+			return iterator(y, nil);
 		}
 
-		const_iterator upper_bound(const T& k)
+		iterator upper_bound(const T& k)
 		{
 			_Base_nptr x = root, y = nil;
 			while(x != nil)
@@ -429,14 +429,14 @@ namespace ctl
 				else
 					x = x->right;
 			}
-			return const_iterator(y, nil);
+			return iterator(y, nil);
 		}
 
-		const_iterator insert(const T& k)
+		iterator insert(const T& k)
 		{
 			++_M_size;
 			_Base_nptr y, z = new node(Red, root, nil, nil, k), x;
-			const_iterator result(z, nil);
+			iterator result(z, nil);
 			if(z->up == nil)
 				root = z;
 			else
@@ -522,7 +522,7 @@ namespace ctl
 				++first;
 		}
 
-		void erase(const const_iterator& it)
+		void erase(const iterator& it)
 		{
 			--_M_size;
 			_Base_nptr z = it._M_node, y = z, x;
@@ -627,13 +627,13 @@ namespace ctl
 		size_t erase(const T& k)
 		{
 			size_t res = _M_size;
-			const_iterator first = lower_bound(k);
+			iterator first = lower_bound(k);
 			while(first._M_node != nil && *first == k)
 				erase(first++);
 			return res - _M_size;
 		}
 
-		void erase(const_iterator first, const_iterator after_last)
+		void erase(iterator first, iterator after_last)
 		{
 				while(first != after_last)
 				{

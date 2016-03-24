@@ -62,7 +62,8 @@ public:
 			return;
 		while (x->p != nil) {
 			if (x->p->p != nil &&
-					(x->p->kid[L] == x) == (x->p->p->kid[L] == x->p)) {
+				(x->p->kid[L] == x) == (x->p->p->kid[L] == x->p))
+			{
 				rotate(x->p->p, x->p->p->kid[L] == x->p);
 				rotate(x->p, x->p->kid[L] == x);
 			} else
